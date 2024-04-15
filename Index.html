@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.5.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #808080; /* Gray background color */
+        }
+        #todo-list {
+            width: 300px;
+            margin: 0 auto;
+            text-align: left;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .task {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px auto;
+        }
+        .delete-button {
+            background-color: #ff6961;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Todo List</h1>
+    <div class="mt-3">
+        <label for="themeSelector">Select Theme:</label>
+        <select id="themeSelector" class="form-select">
+            <option value="default">Default</option>
+            <option value="primary">Primary</option>
+            <option value="success">Success</option>
+            <option value="info">Info</option>
+            <option value="warning">Warning</option>
+            <option value="danger">Danger</option>
+        </select>
+    </div><br>
+    <div id="todo-list">
+        <div>
+            <input type="text" id="task" placeholder="Add a new task" class="form-control mb-2">
+            <button onclick="addTask()" class="btn btn-primary btn-block">Add Task</button>
+        </div>
+        <div id="tasks">
+            <!-- Tasks will be added here -->
+        </div>
+    </div>
+
+    <script>
+        // Function to load tasks from local storage
+        function loadTasks() {
+            const savedTasks = localStorage.getItem("tasks");
+            if (savedTasks) {
+                const taskList = document.getElementById("tasks");
+                taskList.innerHTML = savedTasks;
+            }
+        }
+
+        // Function to save tasks to local storage
+        function saveTasks() {
+            const taskList = document.getElementById("tasks");
+            localStorage.setItem("tasks", taskList.innerHTML);
+        }
+
+        function addTask() {
+            const taskInput = document.getElementById("task");
+            const taskText = taskInput.value.trim();
+
+            if (taskText === "") {
+                alert("Please enter a task!");
+                return;
+            }
+
+            const taskList = document.getElementById("tasks");
+
+            // Create a new task element
+            const taskElement = document.createElement("div");
+            taskElement.className = "task";
+            taskElement.innerHTML = `
+                <span>${taskText}</span>
+                <button class="delete-button" onclick="deleteTask(this)">Delete</button>
+            `;
+
+            // Add the task to the list
+            taskList.appendChild(taskElement);
+
+            // Save tasks to local storage
+            saveTasks();
+
+            // Clear the input field
+            taskInput.value = "";
+        }
+
+        function deleteTask(button) {
+            const taskList = document.getElementById("tasks");
+            const taskElement = button.parentElement;
+            taskList.removeChild(taskElement);
+
+            // Save tasks to local storage after deletion
+            saveTasks();
+        }
+
+        // Load tasks when the page loads
+        window.onload = loadTasks;
+
+        // Add task when Enter key is pressed
+        const taskInput = document.getElementById("task");
+        taskInput.addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                addTask();
+            }
+        });
+
+        // Change theme based on the selected option
+        const themeSelector = document.getElementById("themeSelector");
+        themeSelector.addEventListener("change", function() {
+            const selectedTheme = themeSelector.value;
+            document.getElementById("todo-list").style.backgroundColor = getBackgroundColor(selectedTheme);
+        });
+
+        // Function to get background color based on the selected theme
+        function getBackgroundColor(theme) {
+            switch (theme) {
+                case 'primary':
+                    return '#007bff';
+                case 'success':
+                    return '#28a745';
+                case 'info':
+                    return '#17a2b8';
+                case 'warning':
+                    return '#ffc107';
+                case 'danger':
+                    return '#dc3545';
+                default:
+                    return '#f9f9f9'; // Default theme
+            }
+        }
+    </script>
+</body>
+</html>
